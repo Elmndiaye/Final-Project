@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { PostData } from '../../PostData';
+import { PostData } from '../PostData';
 import{ Redirect } from "react-router-dom";
 
 

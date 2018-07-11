@@ -1,7 +1,7 @@
 import React from 'react';
 import {Route, Switch}from "react-router-dom";
-import homePage from './components/pages/homepage';
-import loginPage from "./components/pages/login";
+import homePage from './pages/homepage';
+import loginPage from "./pages/login";
 // import signUp from './components/pages/signup';
 // import routes from '../routes/routes';
 // import redirect from '../routes/redirect'
