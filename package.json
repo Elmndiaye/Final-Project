@@ -1,0 +1,29 @@
+{
+  "name": "ulaundry",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "connect-session-sequelize": "^5.2.2",
+    "eslint": "^5.1.0",
+    "express-session": "^1.15.6",
+    "jslint": "^0.12.0",
+    "mysql": "^2.15.0",
+    "next": "^6.1.1",
+    "next-redux-wrapper": "^2.0.0-beta.6",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.4",
+    "semantic-ui-css": "^2.3.2",
+    "sequelize": "^4.38.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
