@@ -48,7 +48,7 @@ return(
     <label>username</label>
     <input type="text" name="username" placeholder="username" onChange={this.onChange}/>
     <label>password</label>
-    <input type="text" name="password" placeholder="upassword" onChange={this.onChange}/>
+    <input type="text" name="password" placeholder="password" onChange={this.onChange}/>
     <label>email</label>
     <input type="text" name="email" placeholder="email" onChange={this.onChange}/>
     <label>name</label>

@@ -6,7 +6,7 @@ const passport = require('passport');
 const bodyParser = require("body-parser");
 const session = require('express-session');
 const sessionStore = require('connect-session-sequelize');
-
+var db = require('../db');
 // const routes = require("./routes");
 const PORT = process.env.PORT || 3000;
 
