@@ -6,18 +6,18 @@ const passport = require('passport');
 const bodyParser = require("body-parser");
 const session = require('express-session');
 const sessionStore = require('connect-session-sequelize');
-const db =require('./db/models');
-const routes = require("./routes");
+
+// const routes = require("./routes");
 const PORT = process.env.PORT || 3000;
 
-const dev = proces.env.NODE_ENV || 'development';
+const dev = process.env.NODE_ENV || 'development';
 const app = next({ dev }); 
 const handle = app.getRequestHandler()
 
 passport.use (
     new GoogleStrategy(
         {
-        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientID: process.env.GOOGLE_CLIENT_ID=1234,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL:  process.env.GOOGLE_CALLBACK_URL
         },
@@ -42,7 +42,6 @@ passport.serializeUser(function(obj, cb) {
 passport.deserializeUser(function(obj, cb) {
     cb(null, obj)
 })
-
 
 
 // next is an app
