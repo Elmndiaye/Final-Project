@@ -36,4 +36,4 @@ const Post = db.define('Post', {
   }
 });
 Post.sync()
-module.exports = { Sequelize, db, Post };
+module.exports = { Sequelize, users, Post };
