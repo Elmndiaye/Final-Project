@@ -1,118 +1,91 @@
-require('dotenv').config();
-const express = require("express");
-const next = require('next');
-const GoogleStrategy = require ('passport-google-oauth20').Strategy;
-const passport = require('passport');
-const bodyParser = require("body-parser");
-const session = require('express-session');
-const sessionStore = require('connect-session-sequelize');
-var db = require('../db');
-// const routes = require("./routes");
-const PORT = process.env.PORT || 3000;
+var express = require("express");
+var bodyParser = require("body-parser");
+var logger = require("morgan");
+var mongoose = require("mongoose");
 
-const dev = process.env.NODE_ENV || 'development';
-const app = next({ dev }); 
-const handle = app.getRequestHandler()
+// Our scraping tools
+// Axios is a promised-based http library, similar to jQuery's Ajax method
+// It works on the client and on the server
+var axios = require("axios");
+var cheerio = require("cheerio");
 
-passport.use (
-    new GoogleStrategy(
-        {
-        clientID: process.env.GOOGLE_CLIENT_ID=1234,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL:  process.env.GOOGLE_CALLBACK_URL
-        },
-    (accessToken, refreshToken, profiles, cb) => {
-        db.User
-        .findOrCreate({
-            where: { googleId: profile.id }
-        })
-        .then((users, created) => {
-            return cb(null, { user: users[o].get(), profile })
-        })
+// Require all models
+var db = require("./models");
 
-    }
-))
+var PORT = 3000;
 
+// Initialize Express
+var app = express();
 
+// Configure middleware
 
-passport.serializeUser(function(obj, cb) {
-    cb(null, obj)
-})
+// Use morgan logger for logging requests
+app.use(logger("dev"));
+// Use body-parser for handling form submissions
+app.use(bodyParser.urlencoded({ extended: true }));
+// Use express.static to serve the public folder as a static directory
+app.use(express.static("public"));
 
-passport.deserializeUser(function(obj, cb) {
-    cb(null, obj)
-})
+// By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
+// Connect to the Mongo DB
+mongoose.Promise = Promise;
+mongoose.connect("mongodb://localhost/Ulaundry", {
+  useMongoClient: true
+});
 
+// Routes
 
-// next is an app
-//session storage
-
-app 
-    .prepare()
-    .then(() => {
-    const server = express ()
-    const sequelizeStore = new (sessionStore(session.Store))({
-        db: db.sequelize
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+  // Grab every document in the Articles collection
+  db.Article.find({})
+    .then(function(dbArticle) {
+      // If we were able to successfully find Articles, send them back to the client
+      res.json(dbArticle);
     })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
 
-server.use(bodyParser.urlencoded({ extended: true}));
-server.use(
-    session({
-        secret: 'pain',
-        store: sequelizeStore,
-        cookie: { maxAge: 334456577 },
-        resave: false,
-        saveUnitialized: false
+// Route for grabbing a specific Article by id, populate it with it's note
+app.get("/articles/:id", function(req, res) {
+  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  db.Article.findOne({ _id: req.params.id })
+    // ..and populate all of the notes associated with it
+    .populate("note")
+    .then(function(dbArticle) {
+      // If we were able to successfully find an Article with the given id, send it back to the client
+      res.json(dbArticle);
     })
-)
-server.use(passport.initialize())
-server.use(passport.session())
-server.use(function(err, req, res, next){
-    console.error(err.stack)
-    res.status(500).send('watch wyc!')
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
 
-})
+// Route for saving/updating an Article's associated Note
+app.post("/articles/:id", function(req, res) {
+  // Create a new note and pass the req.body to the entry
+  db.Note.create(req.body)
+    .then(function(dbNote) {
+      // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
+      // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
+      // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+    })
+    .then(function(dbArticle) {
+      // If we were able to successfully update an Article, send it back to the client
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
 
-//connect the database
-sequelizeStore.sync()
-//express is a server
-server.get(
-  '/login',
-  passport.authenticate('google', {
-      scope: ['email', 'profile', 'http://www.googleapis.com/auth/']
-  })  
-)
-
-server.get(
-    '/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login'}),
-    (req, res) => {
-        res.redirect('/dashboard')
-    }
-)
-
-server.get('/dashboard', (req, res)=> {
-    console.log(req.session)
-    app.render( '/dashboard', { data: req.user })
-})
-
-//SSR FOR EVENTS
-server.get('/event/:name', (req, res)=> {
-    app.render('/events', { data: req.user })
-
-})
-
-
-server.get('*', (req, res)=> handle (req, res))
-
-server.listen(3000, err => {
-    if (err) throw err
-    console.log('> Ready on http://localhost:3000')
-})
-})
-.catch(ex => {
-    console.error(ex.stack)
-    process.exit[1]
-})
-
-
+// Start the server
+app.listen(PORT, function() {
+  console.log("App running on port " + PORT + "!");
+});

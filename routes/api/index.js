@@ -1,7 +1,9 @@
-const router = require("express").Router();
-const itemRoutes = require("./items");
+const router = require(“express”).Router();
 
-// Book routes
-router.use("/items", itemRoutes);
+//sign up, new login route for local and google
+const usersRoutes = require(“./users”);
+
+router.use(“/user”, usersRoutes);
+
 
 module.exports = router;
