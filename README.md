@@ -1,1 +1,3 @@
-React Welcome Project with Login
+Ulaundry  is web app which allow people who doesn’t have a lot of time to handle their laundry, to have a possibility to request a service from an app to pickup the laundry in a specific time and drop back the laundry when it’s done in a request time for drop off.  Users will have possibilities to control and follow the services they want and will be able to request also specific services like dry cleaner for specific clothes: Pants, Shirts, Cover, Sheets and others or normal laundry also users will be able to control the number of pieces of their laundry. User will be able to request drop off time.
+
+Need to install json package to run this app 
